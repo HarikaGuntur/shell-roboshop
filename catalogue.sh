@@ -38,7 +38,7 @@ Validate $? "installing nodejs"
 id roboshop &>>$LOGS_FILE
 if [ $? -ne 0 ]; then
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
-    VALIDATE $? "Creating system user"
+    Validate $? system user"
 else
     echo -e "Roboshop user already exist ... $Y SKIPPING $N"
 fi
@@ -53,7 +53,7 @@ cd /app
 Validate $? "moving to app directory"
 
 rm -rf /app/*
-VALIDATE $? "Removing existing code"
+Validate $? existing code"
 
 unzip /tmp/catalogue.zip &>>$LOGS_FILE
 Validate $? "unzipping the code"
@@ -74,13 +74,13 @@ dnf install mongodb-mongosh -y &>>$LOGS_FILE
 
 if [ $INDEX -le 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js
-    VALIDATE $? "Loading products"
+   Validate $?products"
 else
     echo -e "Products already loaded ... $Y SKIPPING $N"
 fi
 
 systemctl restart catalogue
-VALIDATE $? "Restarting catalogue"
+Validate $? " Restarting catalogue"
 
 
 
