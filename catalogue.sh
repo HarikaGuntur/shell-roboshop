@@ -53,7 +53,7 @@ cd /app
 Validate $? "moving to app directory"
 
 rm -rf /app/*
-Validate $? existing code"
+Validate $?"existing code"
 
 unzip /tmp/catalogue.zip &>>$LOGS_FILE
 Validate $? "unzipping the code"
@@ -74,7 +74,7 @@ dnf install mongodb-mongosh -y &>>$LOGS_FILE
 
 if [ $INDEX -le 0 ]; then
     mongosh --host $MONGODB_HOST </app/db/master-data.js
-   Validate $?products"
+   Validate $? "products catalogue"
 else
     echo -e "Products already loaded ... $Y SKIPPING $N"
 fi
