@@ -7,6 +7,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.dawshars.online
 
 if [ $USERID -ne 0 ]; then
     echo -e "$R Please run this script with root user access $N" | tee -a $LOGS_FILE
@@ -46,6 +48,46 @@ Validate $? "creating app directory"
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
 Validate $? "downloading catalogue code"
+
+cd /app 
+Validate $? "moving to app directory"
+
+rm -rf /app/*
+VALIDATE $? "Removing existing code"
+
+unzip /tmp/catalogue.zip &>>$LOGS_FILE
+Validate $? "unzipping the code"
+
+npm install &>>$LOGS_FILE
+Validate $? "installing dependencies"
+
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
+Validate $? "creating systemctl service"
+
+systemctl daemon-reload
+systemctl enable catalogue &>>$LOGS_FILE
+systemctl start catalogue
+Validate $? "starting and enabling catalogue"
+
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+dnf install mongodb-mongosh -y &>>$LOGS_FILE
+
+if [ $INDEX -le 0 ]; then
+    mongosh --host $MONGODB_HOST </app/db/master-data.js
+    VALIDATE $? "Loading products"
+else
+    echo -e "Products already loaded ... $Y SKIPPING $N"
+fi
+
+systemctl restart catalogue
+VALIDATE $? "Restarting catalogue"
+
+
+
+
+
+
+
 
 
 
