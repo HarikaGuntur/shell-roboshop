@@ -28,9 +28,9 @@ cp mongo.repo /etc/yum.repos.d/mongo.repo
 Validate $? "copying mongo repo"
 
 dnf install mongodb-org -y &>>$LOGS_FILE
-validate $? "installing mongodb server"
+Validate $? "installed mongodb"
 
-systemctl enable mongod &>>$LOGS_FILE
+systemctl enable mongod 
 Validate $? "enabled mongodb"
 
 systemctl start mongod 
