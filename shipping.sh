@@ -8,7 +8,7 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 SCRIPT_DIR=$PWD
-MONGODB_HOST=mongodb.dawshars.online
+MYSQL_HOST=mysql.dawshars.online
 
 if [ $USERID -ne 0 ]; then
     echo -e "$R Please run this script with root user access $N" | tee -a $LOGS_FILE
@@ -62,6 +62,17 @@ VALIDATE $? "moving and renaming shipping"
 
 cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service
 VALIDATE $? "Created systemctl service"
+
+dnf install mysql -y  &>>$LOGS_FILE
+VALIDATE $? "installing mysql service"
+
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/schema.sql
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/app-user.sql 
+mysql -h $MYSQL_HOST -uroot -pRoboShop@1 < /app/db/master-data.sql
+
+systemctl enable shipping 
+systemctl start shipping
+VALIDATE $? "enabled and started shipping"
 
 
 
